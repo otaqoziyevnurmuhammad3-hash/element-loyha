@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="uz" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Element Matematika Markazi - Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+    .hidden { display: none !important; }
+    .element-gradient { background: linear-gradient(135deg,#059669 0%,#10b981 50%,#047857 100%); }
+    .element-glow { box-shadow: 0 0 35px rgba(16,185,129,.2); }
+    .element-logo { background:linear-gradient(135deg,#047857 0%,#10b981 100%); box-shadow:0 10px 25px -5px rgba(16,185,129,.4); }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-12 selection:bg-emerald-500 selection:text-slate-950">
+
+<section id="login-section" class="flex items-center justify-center min-h-screen p-4">
+  <div class="bg-slate-900 border border-emerald-900/60 rounded-3xl p-8 max-w-md w-full space-y-6 element-glow shadow-2xl">
+    <div class="text-center space-y-3">
+      <div class="element-logo w-20 h-20 rounded-3xl flex flex-col items-center justify-center mx-auto border border-emerald-400/40">
+        <span class="font-black text-white text-4xl leading-none tracking-tighter">E</span>
+        <span class="text-[9px] font-extrabold uppercase tracking-widest text-emerald-100 mt-0.5">Element</span>
+      </div>
+      <div>
+        <h1 class="text-2xl font-black text-emerald-400 uppercase tracking-wide">Element</h1>
+        <p class="text-xs font-semibold text-emerald-500/80 uppercase tracking-wider">Matematika Markazi</p>
+      </div>
+    </div>
+    <form id="login-form" class="space-y-4 pt-2">
+      <div>
+        <label for="login-username" class="block text-xs font-bold text-slate-400 mb-1">Login:</label>
+        <input type="text" id="login-username" autocomplete="username" placeholder="Loginni kiriting"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+      </div>
+      <div>
+        <label for="login-password" class="block text-xs font-bold text-slate-400 mb-1">Parol:</label>
+        <input type="password" id="login-password" autocomplete="current-password" placeholder="Parolni kiriting"
+          class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+      </div>
+      <p id="login-error" class="hidden text-sm text-red-400" role="alert"></p>
+      <button type="submit" class="w-full element-gradient text-slate-950 font-black p-3.5 rounded-xl shadow-lg text-sm uppercase tracking-wider active:scale-[0.98]">
+        Tizimga kirish
+      </button>
+    </form>
+  </div>
+</section>
+
+<div id="app-container" class="hidden">
+  <header class="bg-slate-900/95 backdrop-blur-md border-b border-emerald-900/40 p-4 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="element-logo w-11 h-11 rounded-2xl flex items-center justify-center font-black text-white border border-emerald-400/30 text-xl">E</div>
+        <div>
+          <h1 class="text-lg font-black text-emerald-400 uppercase tracking-wide leading-none flex items-center gap-2">
+            ELEMENT <span id="user-role-badge" class="text-[10px] bg-emerald-950 border border-emerald-800 text-emerald-300 px-2.5 py-0.5 rounded-full"></span>
+          </h1>
+          <p class="text-[11px] text-slate-400 mt-1">Matematika Markazi • <span id="current-user-name" class="text-slate-200 font-bold"></span></p>
+        </div>
+      </div>
+      <nav class="flex flex-wrap gap-1.5 text-xs font-bold">
+        <button data-tab="tab-home" class="nav-btn">Asosiy</button>
+        <button data-tab="tab-lessons" class="nav-btn">Darslar & Topshiriqlar</button>
+        <button data-tab="tab-journal" class="nav-btn">Jurnal</button>
+        <button data-tab="tab-ai-tutor" class="nav-btn">🤖 AI Repetitor</button>
+        <button data-tab="tab-quiz" class="nav-btn">🧠 Testlar</button>
+        <button data-tab="tab-teacher" id="btn-tab-teacher" class="nav-btn hidden">Ustoz Paneli</button>
+        <button data-tab="tab-students" id="btn-tab-students" class="nav-btn hidden">Admin Paneli</button>
+        <button id="logout-btn" class="bg-red-950/60 border border-red-800/80 text-red-300 px-3.5 py-2 rounded-xl hover:bg-red-900">Chiqish</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-4 space-y-6">
+    <section id="tab-home" class="tab-panel space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="md:col-span-1 bg-slate-900 border border-emerald-900/30 rounded-2xl p-5 space-y-3 shadow-xl">
+          <h3 class="text-sm font-bold text-emerald-400">Element Markazi</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">Matematika va aniq fanlarga ixtisoslashgan ta'lim maskani.</p>
+          <div class="space-y-2 text-xs font-bold pt-3 border-t border-slate-800">
+            <div class="bg-slate-800/80 p-2.5 rounded-xl flex justify-between"><span class="text-slate-400">Jami darslar:</span><span id="stat-lessons-count" class="text-emerald-400">0 ta</span></div>
+            <div class="bg-slate-800/80 p-2.5 rounded-xl flex justify-between"><span class="text-slate-400">O'quvchilar:</span><span id="stat-students-count" class="text-indigo-400">0 ta</span></div>
+          </div>
+        </div>
+        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
+          <h3 class="text-sm font-bold text-emerald-400">Element yangiliklari va e'lonlar</h3>
+          <div class="space-y-2 text-xs text-slate-300">
+            <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">🚀 <b>Yangi mavsum boshlandi!</b> Interaktiv darslar va o'quv materiallari joylanmoqda.</div>
+            <div class="bg-slate-800/60 p-3 rounded-xl border border-slate-700/50">🏆 <b>Olimpiada saralashi:</b> Markaz ichki matematika sinovlari o'tkaziladi.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="student-home-panel" class="hidden rounded-2xl p-6 bg-gradient-to-br from-emerald-950 via-slate-900 to-teal-950 border border-emerald-800/50 shadow-xl space-y-4">
+        <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-3 py-1 rounded-full border border-emerald-400/30">Shaxsiy kabinet</span>
+        <h2 class="text-2xl font-black text-white">Xush kelibsiz, <span id="student-welcome-name"></span>!</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <div class="bg-slate-800/80 border border-slate-700 p-3 rounded-xl">Baho: <span id="student-my-grade" class="font-bold text-amber-400"></span></div>
+          <div class="bg-slate-800/80 border border-slate-700 p-3 rounded-xl">Davomat: <span id="student-my-attendance" class="font-bold text-emerald-400"></span></div>
+          <div class="bg-slate-800/80 border border-slate-700 p-3 rounded-xl">To'lov: <span id="student-my-payment" class="font-bold text-indigo-400"></span></div>
+          <div class="bg-slate-800/80 border border-slate-700 p-3 rounded-xl">Ball (XP): <span id="student-my-xp" class="font-bold text-sky-400"></span></div>
+        </div>
+        <div class="flex flex-wrap gap-3 pt-2">
+          <button data-go="tab-ai-tutor" class="element-gradient text-slate-950 font-black px-5 py-3 rounded-xl text-sm">🤖 AI Repetitorga savol berish</button>
+          <button id="fast-learning-toggle" class="bg-slate-800 text-emerald-300 border border-emerald-600/50 font-bold px-5 py-3 rounded-xl text-sm">📚 Foydali qoidalar va formulalar</button>
+        </div>
+      </div>
+
+      <div id="fast-learning-box" class="hidden bg-slate-900 border border-emerald-900/50 rounded-2xl p-6 space-y-4 shadow-xl">
+        <div class="flex justify-between items-center"><h3 class="text-lg font-bold text-emerald-400">Matematik qoidalar va izohlar</h3><button id="fast-learning-close" class="text-slate-400 text-xs font-bold">Yopish</button></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-300">
+          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2"><h4 class="font-bold text-emerald-300 text-sm">1. Chiziqli tenglamalar</h4><p>ax + b = c ko'rinishidagi tenglamada x ni topish uchun avval b ni qarama-qarshi ishora bilan o'tkazing.</p></div>
+          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2"><h4 class="font-bold text-emerald-300 text-sm">2. Qisqa ko'paytirish</h4><p>(a + b)² = a² + 2ab + b²<br>(a - b)² = a² - 2ab + b²<br>a² - b² = (a - b)(a + b)</p></div>
+          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2"><h4 class="font-bold text-emerald-300 text-sm">3. Pifagor teoremasi</h4><p>To'g'ri burchakli uchburchakda c² = a² + b².</p></div>
+          <div class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2"><h4 class="font-bold text-emerald-300 text-sm">4. Diskriminant</h4><p>ax² + bx + c = 0 uchun D = b² - 4ac.</p></div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
+        <h3 class="text-sm font-bold text-emerald-400">O'quvchilar reytingi (XP ballari)</h3><div id="leaderboard-list" class="space-y-2 text-xs text-slate-300"></div>
+      </div>
+    </section>
+
+    <section id="tab-lessons" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl"><h2 class="text-lg font-bold text-emerald-400">📖 Ustoz darslari</h2><div id="lessons-list" class="space-y-3"></div></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl"><h2 class="text-lg font-bold text-emerald-400">📝 Mening topshiriqlarim</h2><div id="tasks-list" class="space-y-3"></div></div>
+      </div>
+    </section>
+
+    <section id="tab-journal" class="tab-panel hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
+        <h3 class="font-bold text-emerald-400">Element markazi elektron jurnali</h3>
+        <div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead><tr class="border-b border-slate-800 text-slate-400 text-xs"><th class="pb-2">F.I.Sh / Login</th><th class="pb-2">Sinf / Guruh</th><th class="pb-2">Baho</th><th class="pb-2">Davomat</th><th class="pb-2">To'lov</th></tr></thead><tbody id="journal-students-table"></tbody></table></div>
+      </div>
+    </section>
+
+    <section id="tab-ai-tutor" class="tab-panel hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+        <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl element-gradient flex items-center justify-center font-black text-slate-950">AI</div><div><h2 class="text-lg font-bold text-emerald-400">Element AI — matematika yordamchisi</h2><p class="text-xs text-slate-400">Arifmetik misol (masalan: 25*25) yoki mavzu nomini yozing.</p></div></div>
+        <div class="space-y-3 pt-2"><textarea id="ai-question-input" rows="3" placeholder="Masalan: 25*25 yoki Pifagor teoremasi..." class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea><button id="ask-ai-btn" class="element-gradient text-slate-950 font-bold px-6 py-3 rounded-xl text-xs uppercase tracking-wider shadow-lg">Javob va yechimni olish</button></div>
+        <div id="ai-response-box" class="hidden bg-slate-950 border border-emerald-950 rounded-xl p-5 text-sm text-slate-200 whitespace-pre-wrap"><span class="font-bold text-emerald-400 block border-b border-emerald-900/50 pb-2 mb-3">🤖 Yordamchi javobi:</span><div id="ai-answer-text" class="leading-relaxed"></div></div>
+        <p class="text-[11px] text-slate-500">Eslatma: bu demo yordamchi faqat oddiy hisob-kitob va bir nechta tayyor mavzuni tushuntiradi. Haqiqiy AI ulanishi mavjud emas.</p>
+      </div>
+    </section>
+
+    <section id="tab-quiz" class="tab-panel hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+        <h2 class="text-lg font-bold text-emerald-400">🧠 Tezkor matematik test</h2><p class="text-xs text-slate-300">To'g'ri javob uchun 10 XP oling.</p>
+        <div class="bg-slate-800/60 p-5 rounded-xl border border-slate-700 space-y-4"><h3 id="quiz-question" class="text-sm font-bold text-white"></h3><div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div><p id="testResult" class="text-xs font-bold text-emerald-400" aria-live="polite"></p></div>
+      </div>
+    </section>
+
+    <section id="tab-teacher" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+          <h2 class="text-lg font-bold text-emerald-400">📚 Yangi dars qo'shish</h2>
+          <form id="lesson-form" class="space-y-3 text-xs">
+            <label class="block text-slate-400 font-bold">Dars nomi<input required id="lessonTitle" class="field" placeholder="Masalan: Chiziqli tenglamalar"></label>
+            <label class="block text-slate-400 font-bold">Dars izohi<textarea id="lessonDesc" rows="2" class="field" placeholder="Dars haqida qisqacha..."></textarea></label>
+            <label class="block text-slate-400 font-bold">Video yoki material havolasi<input id="lessonUrl" type="url" class="field" placeholder="https://youtube.com/..."></label>
+            <button class="element-gradient text-slate-950 font-bold px-5 py-2.5 rounded-xl w-full">Darsni joylash</button>
+          </form>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+          <h2 class="text-lg font-bold text-emerald-400">📝 Yangi topshiriq berish</h2>
+          <form id="task-form" class="space-y-3 text-xs">
+            <label class="block text-slate-400 font-bold">Topshiriq nomi<input required id="taskTitle" class="field" placeholder="Masalan: Uyga vazifa №5"></label>
+            <label class="block text-slate-400 font-bold">Topshiriq sharti<textarea required id="taskDesc" rows="2" class="field" placeholder="Misollarni yechib keling..."></textarea></label>
+            <label class="block text-slate-400 font-bold">Qaysi sinf uchun<select id="taskGrade" class="field"><option value="all">Barcha sinflar</option><option value="5">5-sinf</option><option value="4">4-sinf</option></select></label>
+            <button class="element-gradient text-slate-950 font-bold px-5 py-2.5 rounded-xl w-full">Topshiriq berish</button>
+          </form>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl"><h3 class="font-bold text-emerald-400">Joylangan darslar boshqaruvi</h3><div id="teacherLessonsList" class="space-y-2"></div></div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl"><h3 class="font-bold text-emerald-400">Topshiriqlar boshqaruvi</h3><div id="teacherTasksList" class="space-y-2"></div></div>
+      </div>
+    </section>
+
+    <section id="tab-students" class="tab-panel hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+          <h2 class="text-lg font-bold text-emerald-400">➕ Yangi o'quvchi qo'shish</h2>
+          <form id="student-form" class="space-y-3 text-xs">
+            <label class="block text-slate-400 font-bold">F.I.Sh<input required id="newName" class="field" placeholder="O'quvchi ismi"></label>
+            <label class="block text-slate-400 font-bold">Login<input required id="newLogin" class="field" placeholder="Masalan: bekzod"></label>
+            <label class="block text-slate-400 font-bold">Parol<input required id="newPassword" type="password" class="field" placeholder="Vaqtinchalik parol"></label>
+            <label class="block text-slate-400 font-bold">Sinf<select id="newGrade" class="field"><option value="4">4-sinf</option><option value="5" selected>5-sinf</option></select></label>
+            <button class="element-gradient text-slate-950 font-bold px-5 py-3 rounded-xl w-full">O'quvchini qo'shish</button>
+          </form>
+        </div>
+        <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
+          <h2 class="text-lg font-bold text-emerald-400">👥 O'quvchilar boshqaruvi</h2>
+          <div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead><tr class="border-b border-slate-800 text-slate-400"><th class="pb-2">Ism / Login</th><th class="pb-2">Sinf</th><th class="pb-2">Baho</th><th class="pb-2">Davomat</th><th class="pb-2">To'lov</th><th class="pb-2 text-right">Amal</th></tr></thead><tbody id="adminRows"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+'use strict';
+
+const STORAGE = {
+  students: 'element_students_v4',
+  lessons: 'element_lessons_v4',
+  tasks: 'element_tasks_v4'
+};
+
+const defaultStudents = [
+  { name:'Jasurbek Sobirov', login:'jasur', password:'1234', grade:'5', group:'M-101', mark:'5', attendance:'95%', payment:'To‘langan', xp:140 },
+  { name:'Madina Karimova', login:'madina', password:'1234', grade:'4', group:'M-102', mark:'4', attendance:'90%', payment:'To‘lanmagan', xp:110 }
+];
+const defaultLessons = [
+  { title:'Algebra asoslari — Chiziqli tenglamalar', desc:'Chiziqli tenglamalarni yechish usullari va misollar.', url:'https://www.youtube.com/watch?v=pZe_fMnspoo' }
+];
+const defaultTasks = [
+  { title:'Uyga vazifa №1', desc:'15-sahifadagi misollarni yechish.', grade:'all' }
+];
+
+function loadData(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return structuredClone(fallback);
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : structuredClone(fallback);
+  } catch (error) {
+    console.warn('Saqlangan ma’lumotni o‘qib bo‘lmadi:', error);
+    return structuredClone(fallback);
+  }
+}
+
+let students = loadData(STORAGE.students, defaultStudents);
+let lessons = loadData(STORAGE.lessons, defaultLessons);
+let tasks = loadData(STORAGE.tasks, defaultTasks);
+let user = null;
+let quizIndex = 0;
+let quizAnswered = false;
+
+function save() {
+  try {
+    localStorage.setItem(STORAGE.students, JSON.stringify(students));
+    localStorage.setItem(STORAGE.lessons, JSON.stringify(lessons));
+    localStorage.setItem(STORAGE.tasks, JSON.stringify(tasks));
+  } catch (error) {
+    alert('Ma’lumotni saqlab bo‘lmadi. Brauzer xotirasi cheklangan bo‘lishi mumkin.');
+    console.error(error);
+  }
+}
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[char]);
+}
+
+function isStaff() { return user && (user.role === 'admin' || user.role === 'teacher'); }
+function isAdmin() { return user && user.role === 'admin'; }
+
+function showLoginError(message) {
+  const el = document.getElementById('login-error');
+  el.textContent = message;
+  el.classList.remove('hidden');
+}
+
+document.getElementById('login-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const login = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const error = document.getElementById('login-error');
+  error.classList.add('hidden');
+
+  if (!login || !password) return showLoginError('Login va parolni kiriting.');
+
+  if (login.toLowerCase() === 'admin' && password === 'admin123') {
+    user = { name:'Administrator', role:'admin' };
+  } else if (login.toLowerCase() === 'ustoz' && password === 'ustoz123') {
+    user = { name:'Bosh Ustoz', role:'teacher' };
+  } else {
+    const student = students.find(s =>
+      String(s.login).toLowerCase() === login.toLowerCase() && s.password === password
+    );
+    if (!student) return showLoginError('Login yoki parol noto‘g‘ri.');
+    user = { ...student, role:'student' };
+  }
+
+  document.getElementById('login-section').classList.add('hidden');
+  document.getElementById('app-container').classList.remove('hidden');
+  document.getElementById('current-user-name').textContent = user.name;
+  document.getElementById('user-role-badge').textContent =
+    user.role === 'admin' ? 'Admin' : user.role === 'teacher' ? 'Ustoz' : 'O‘quvchi';
+
+  document.getElementById('btn-tab-teacher').classList.toggle('hidden', !isStaff());
+  document.getElementById('btn-tab-students').classList.toggle('hidden', !isAdmin());
+  document.getElementById('student-home-panel').classList.toggle('hidden', user.role !== 'student');
+
+  switchTab('tab-home');
+  refreshUI();
+  loadQuiz();
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  user = null;
+  document.getElementById('app-container').classList.add('hidden');
+  document.getElementById('login-section').classList.remove('hidden');
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-username').value = '';
+});
+
+document.querySelectorAll('[data-tab]').forEach(button => {
+  button.addEventListener('click', () => switchTab(button.dataset.tab));
+});
+document.querySelectorAll('[data-go]').forEach(button => {
+  button.addEventListener('click', () => switchTab(button.dataset.go));
+});
+
+function switchTab(tabId) {
+  const allowed = {
+    'tab-home': true, 'tab-lessons': true, 'tab-journal': true,
+    'tab-ai-tutor': true, 'tab-quiz': true,
+    'tab-teacher': isStaff(), 'tab-students': isAdmin()
+  };
+  if (!allowed[tabId]) return;
+
+  document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
+  document.getElementById(tabId)?.classList.remove('hidden');
+
+  document.querySelectorAll('.nav-btn').forEach(button => {
+    button.className = 'nav-btn bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl transition';
+  });
+  const active = document.querySelector(`[data-tab="${tabId}"]`);
+  if (active) active.className = 'nav-btn bg-emerald-600 text-slate-950 px-3 py-2 rounded-xl transition font-bold shadow-md';
+  refreshUI();
+}
+
+function refreshUI() {
+  if (!user) return;
+  const me = user.role === 'student' ? students.find(s => s.login === user.login) : null;
+
+  document.getElementById('stat-lessons-count').textContent = `${lessons.length} ta`;
+  document.getElementById('stat-students-count').textContent = `${students.length} ta`;
+
+  if (me) {
+    document.getElementById('student-welcome-name').textContent = me.name;
+    document.getElementById('student-my-grade').textContent = me.mark;
+    document.getElementById('student-my-attendance').textContent = me.attendance;
+    document.getElementById('student-my-payment').textContent = me.payment;
+    document.getElementById('student-my-xp').textContent = me.xp;
+  }
+
+  document.getElementById('lessons-list').innerHTML = lessons.map(lesson => `
+    <article class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-2">
+      <h4 class="font-bold text-emerald-300 text-sm">${esc(lesson.title)}</h4>
+      <p class="text-xs text-slate-300">${esc(lesson.desc)}</p>
+      ${safeUrl(lesson.url) ? `<a href="${esc(lesson.url)}" target="_blank" rel="noopener noreferrer" class="text-xs text-emerald-400 hover:underline">Darsni ochish / ko‘rish ↗</a>` : ''}
+    </article>`).join('') || '<p class="text-xs text-slate-400">Hozircha darslar yo‘q.</p>';
+
+  const visibleTasks = tasks.filter(task => user.role !== 'student' || task.grade === 'all' || task.grade === me?.grade);
+  document.getElementById('tasks-list').innerHTML = visibleTasks.map(task => `
+    <article class="bg-slate-800/80 p-4 rounded-xl border border-slate-700 space-y-1">
+      <h4 class="font-bold text-amber-300 text-sm">${esc(task.title)}</h4>
+      <p class="text-xs text-slate-300">${esc(task.desc)}</p>
+    </article>`).join('') || '<p class="text-xs text-slate-400">Hozircha topshiriqlar yo‘q.</p>';
+
+  document.getElementById('teacherLessonsList').innerHTML = isStaff()
+    ? lessons.map((lesson, i) => `<div class="bg-slate-800 p-3 rounded-xl flex justify-between items-center gap-2 text-xs"><b class="text-emerald-300">${esc(lesson.title)}</b><button data-delete-lesson="${i}" class="danger-btn">O‘chirish</button></div>`).join('')
+    : '';
+  document.getElementById('teacherTasksList').innerHTML = isStaff()
+    ? tasks.map((task, i) => `<div class="bg-slate-800 p-3 rounded-xl flex justify-between items-center gap-2 text-xs"><b class="text-amber-300">${esc(task.title)} (${task.grade === 'all' ? 'Barcha' : esc(task.grade) + '-sinf'})</b><button data-delete-task="${i}" class="danger-btn">O‘chirish</button></div>`).join('')
+    : '';
+
+  document.getElementById('journal-students-table').innerHTML = students.map(s => `
+    <tr class="border-b border-slate-800/60">
+      <td class="py-3 font-bold text-slate-200">${esc(s.name)}<span class="text-[10px] text-slate-400 block font-normal">@${esc(s.login)}</span></td>
+      <td class="py-3 text-emerald-400">${esc(s.grade)}-sinf (${esc(s.group)})</td>
+      <td class="py-3 text-amber-400 font-bold">${esc(s.mark)}</td>
+      <td class="py-3 text-emerald-300">${esc(s.attendance)}</td>
+      <td class="py-3 text-indigo-300">${esc(s.payment)}</td>
+    </tr>`).join('');
+
+  document.getElementById('adminRows').innerHTML = isAdmin() ? students.map((s, i) => `
+    <tr class="border-b border-slate-800/60">
+      <td class="py-2.5 font-bold">${esc(s.name)}<span class="block text-slate-500 font-normal">@${esc(s.login)}</span></td>
+      <td class="py-2.5">${esc(s.grade)}-sinf</td>
+      <td class="py-2.5"><select data-edit-student="${i}" data-field="mark" class="table-select">${['5','4','3','2'].map(v => `<option ${s.mark===v?'selected':''}>${v}</option>`).join('')}</select></td>
+      <td class="py-2.5"><select data-edit-student="${i}" data-field="attendance" class="table-select">${['100%','95%','90%','80%'].map(v => `<option ${s.attendance===v?'selected':''}>${v}</option>`).join('')}</select></td>
+      <td class="py-2.5"><select data-edit-student="${i}" data-field="payment" class="table-select"><option ${s.payment==='To‘langan'?'selected':''}>To‘langan</option><option ${s.payment==='To‘lanmagan'?'selected':''}>To‘lanmagan</option></select></td>
+      <td class="py-2.5 text-right"><button data-delete-student="${i}" class="danger-btn">O‘chirish</button></td>
+    </tr>`).join('') : '';
+
+  const sorted = [...students].sort((a,b) => Number(b.xp) - Number(a.xp));
+  document.getElementById('leaderboard-list').innerHTML = sorted.map((s, i) => `
+    <div class="flex justify-between items-center bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/50">
+      <span class="font-bold text-slate-200">#${i+1}. ${esc(s.name)} (${esc(s.group)})</span>
+      <span class="text-sky-400 font-bold">${Number(s.xp) || 0} XP</span>
+    </div>`).join('') || '<p>Hozircha o‘quvchilar yo‘q.</p>';
+}
+
+function safeUrl(value) {
+  try {
+    const url = new URL(String(value || ''));
+    return url.protocol === 'https:' || url.protocol === 'http:';
+  } catch { return false; }
+}
+
+document.addEventListener('click', event => {
+  const lessonButton = event.target.closest('[data-delete-lesson]');
+  const taskButton = event.target.closest('[data-delete-task]');
+  const studentButton = event.target.closest('[data-delete-student]');
+  if (lessonButton && isStaff()) {
+    const i = Number(lessonButton.dataset.deleteLesson);
+    if (confirm('Dars o‘chirilsinmi?')) { lessons.splice(i,1); save(); refreshUI(); }
+  }
+  if (taskButton && isStaff()) {
+    const i = Number(taskButton.dataset.deleteTask);
+    if (confirm('Topshiriq o‘chirilsinmi?')) { tasks.splice(i,1); save(); refreshUI(); }
+  }
+  if (studentButton && isAdmin()) {
+    const i = Number(studentButton.dataset.deleteStudent);
+    if (confirm('O‘quvchi o‘chirilsinmi?')) { students.splice(i,1); save(); refreshUI(); }
+  }
+});
+
+document.addEventListener('change', event => {
+  const select = event.target.closest('[data-edit-student]');
+  if (!select || !isAdmin()) return;
+  const index = Number(select.dataset.editStudent);
+  const field = select.dataset.field;
+  if (!students[index] || !['mark','attendance','payment'].includes(field)) return;
+  students[index][field] = select.value;
+  save();
+  refreshUI();
+});
+
+document.getElementById('student-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (!isAdmin()) return;
+  const name = document.getElementById('newName').value.trim();
+  const login = document.getElementById('newLogin').value.trim();
+  const password = document.getElementById('newPassword').value;
+  const grade = document.getElementById('newGrade').value;
+  if (!name || !login || !password) return alert('Barcha maydonlarni to‘ldiring.');
+  if (students.some(s => String(s.login).toLowerCase() === login.toLowerCase())) return alert('Bu login band.');
+  students.push({ name, login, password, grade, group:`M-${100 + Number(grade)}`, mark:'5', attendance:'100%', payment:'To‘lanmagan', xp:50 });
+  save(); refreshUI(); event.target.reset();
+  alert('O‘quvchi qo‘shildi.');
+});
+
+document.getElementById('lesson-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (!isStaff()) return;
+  const title = document.getElementById('lessonTitle').value.trim();
+  const desc = document.getElementById('lessonDesc').value.trim();
+  const url = document.getElementById('lessonUrl').value.trim();
+  if (url && !safeUrl(url)) return alert('Havola http:// yoki https:// bilan boshlanishi kerak.');
+  lessons.push({ title, desc, url });
+  save(); refreshUI(); event.target.reset(); alert('Dars joylandi.');
+});
+
+document.getElementById('task-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (!isStaff()) return;
+  const title = document.getElementById('taskTitle').value.trim();
+  const desc = document.getElementById('taskDesc').value.trim();
+  const grade = document.getElementById('taskGrade').value;
+  if (!title || !desc) return alert('Topshiriqni to‘liq kiriting.');
+  tasks.push({ title, desc, grade });
+  save(); refreshUI(); event.target.reset(); alert('Topshiriq berildi.');
+});
+
+document.getElementById('fast-learning-toggle').addEventListener('click', () => document.getElementById('fast-learning-box').classList.toggle('hidden'));
+document.getElementById('fast-learning-close').addEventListener('click', () => document.getElementById('fast-learning-box').classList.add('hidden'));
+
+function calculateExpression(expression) {
+  const tokens = expression.match(/\d+(?:\.\d+)?|[()+\-*/]/g);
+  if (!tokens || tokens.join('') !== expression.replace(/\s/g,'')) throw new Error('Noto‘g‘ri ifoda');
+  let pos = 0;
+  function factor() {
+    const token = tokens[pos++];
+    if (token === '+') return factor();
+    if (token === '-') return -factor();
+    if (token === '(') {
+      const value = sum();
+      if (tokens[pos++] !== ')') throw new Error('Qavs yopilmagan');
+      return value;
+    }
+    if (token === undefined || !/^\d+(?:\.\d+)?$/.test(token)) throw new Error('Son kutilgan');
+    return Number(token);
+  }
+  function product() {
+    let value = factor();
+    while (tokens[pos] === '*' || tokens[pos] === '/') {
+      const op = tokens[pos++];
+      const next = factor();
+      value = op === '*' ? value * next : value / next;
+    }
+    return value;
+  }
+  function sum() {
+    let value = product();
+    while (tokens[pos] === '+' || tokens[pos] === '-') {
+      const op = tokens[pos++];
+      const next = product();
+      value = op === '+' ? value + next : value - next;
+    }
+    return value;
+  }
+  const result = sum();
+  if (pos !== tokens.length || !Number.isFinite(result)) throw new Error('Hisoblab bo‘lmadi');
+  return result;
+}
+
+document.getElementById('ask-ai-btn').addEventListener('click', () => {
+  const input = document.getElementById('ai-question-input').value.trim();
+  const box = document.getElementById('ai-response-box');
+  const output = document.getElementById('ai-answer-text');
+  if (!input) return alert('Misol yoki mavzu yozing.');
+  let answer = 'Kechirasiz, bu mavzu bo‘yicha hozircha tayyor izoh yo‘q.';
+  if (/^[0-9+\-*/().\s]+$/.test(input)) {
+    try { answer = `Natija: ${calculateExpression(input)}`; }
+    catch { answer = 'Hisoblashda xatolik. Misolni tekshirib qayta kiriting.'; }
+  } else if (input.toLowerCase().includes('pifagor')) {
+    answer = 'Pifagor teoremasi: c² = a² + b². To‘g‘ri burchakli uchburchakda gipotenuza kvadrati katetlar kvadratlari yig‘indisiga teng.';
+  } else if (input.toLowerCase().includes('diskriminant')) {
+    answer = 'Kvadrat tenglama ax² + bx + c = 0 uchun diskriminant: D = b² - 4ac. D > 0 bo‘lsa, ikkita haqiqiy ildiz mavjud; D = 0 bo‘lsa, bitta takroriy ildiz; D < 0 bo‘lsa, haqiqiy ildiz yo‘q.';
+  } else if (input.toLowerCase().includes('chiziqli tenglama')) {
+    answer = 'Chiziqli tenglama odatda ax + b = c ko‘rinishida bo‘ladi. Avval b ni qarama-qarshi ishora bilan o‘tkazing, so‘ng ikki tomonni a ga bo‘ling (a ≠ 0).';
+  }
+  output.textContent = answer;
+  box.classList.remove('hidden');
+});
+
+const quizList = [
+  { q:'5 × 5 nechaga teng?', a:['10','20','25','30'], correct:'25' },
+  { q:'12 ning kvadrati nechaga teng?', a:['124','144','122','100'], correct:'144' },
+  { q:'x + 7 = 12. x ni toping.', a:['3','4','5','6'], correct:'5' }
+];
+
+function loadQuiz() {
+  const q = quizList[quizIndex];
+  quizAnswered = false;
+  document.getElementById('quiz-question').textContent = q.q;
+  document.getElementById('testResult').textContent = '';
+  const options = document.getElementById('quiz-options');
+  options.replaceChildren();
+  q.a.forEach(option => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-white p-3 rounded-xl font-bold transition shadow-sm';
+    button.textContent = option;
+    button.addEventListener('click', () => answerQuiz(option, q.correct, button));
+    options.appendChild(button);
+  });
+}
+
+function answerQuiz(selected, correct, selectedButton) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const result = document.getElementById('testResult');
+  if (selected === correct) {
+    result.textContent = 'To‘g‘ri! +10 XP';
+    if (user?.role === 'student') {
+      const student = students.find(s => s.login === user.login);
+      if (student) { student.xp = (Number(student.xp) || 0) + 10; save(); refreshUI(); }
+    }
+  } else {
+    result.textContent = `Noto‘g‘ri. To‘g‘ri javob: ${correct}`;
+  }
+  document.querySelectorAll('#quiz-options button').forEach(button => button.disabled = true);
+  selectedButton.classList.add('ring-2','ring-emerald-400');
+  const next = document.createElement('button');
+  next.type = 'button';
+  next.textContent = 'Keyingi savol →';
+  next.className = 'bg-emerald-600 text-slate-950 px-4 py-2 rounded-lg font-bold text-xs';
+  next.addEventListener('click', () => { quizIndex = (quizIndex + 1) % quizList.length; loadQuiz(); });
+  document.getElementById('quiz-options').appendChild(next);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.field').forEach(el => {
+    el.classList.add('mt-1','w-full','bg-slate-800','border','border-slate-700','rounded-xl','p-2.5','text-slate-100','focus:outline-none','focus:border-emerald-500');
+  });
+  document.querySelectorAll('.danger-btn').forEach(el => el.classList.add('bg-red-900/60','border','border-red-700','text-red-300','px-2.5','py-1','rounded-lg'));
+  document.querySelectorAll('.table-select').forEach(el => el.classList.add('bg-slate-800','border','border-slate-700','p-1','rounded','text-xs'));
+});
+</script>
+</body>
+</html>
